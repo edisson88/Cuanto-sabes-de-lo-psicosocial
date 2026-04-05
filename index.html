@@ -1,0 +1,1562 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>¿Cuánto sabes de lo psicosocial?</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: #121a33;
+        --panel-2: #182347;
+        --accent: #f58220;
+        --accent-2: #ffd100;
+        --text: #f5f7fb;
+        --muted: #b6c1de;
+        --success: #28c76f;
+        --danger: #ff5b5b;
+        --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+        --radius: 22px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background:
+          radial-gradient(
+            circle at top right,
+            rgba(245, 130, 32, 0.18),
+            transparent 18%
+          ),
+          radial-gradient(
+            circle at left bottom,
+            rgba(255, 209, 0, 0.1),
+            transparent 20%
+          ),
+          linear-gradient(135deg, #09101d, #0d1530 55%, #0d1225);
+        color: var(--text);
+        min-height: 100vh;
+        padding: 24px;
+      }
+
+      .app {
+        max-width: 1320px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1.35fr 0.85fr;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .card {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.03),
+          rgba(255, 255, 255, 0.01)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        backdrop-filter: blur(6px);
+      }
+
+      .hero {
+        padding: 28px;
+        background: linear-gradient(
+          180deg,
+          rgba(245, 130, 32, 0.1),
+          rgba(255, 255, 255, 0.02)
+        );
+      }
+
+      .eyebrow {
+        display: inline-block;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 209, 0, 0.16);
+        color: var(--accent-2);
+        font-size: 13px;
+        letter-spacing: 0.4px;
+        margin-bottom: 14px;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(28px, 4vw, 46px);
+        line-height: 1.04;
+      }
+
+      .subtitle {
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.5;
+        margin: 0;
+        max-width: 70ch;
+      }
+
+      .stage {
+        padding: 24px 28px 28px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .pill {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 10px 14px;
+        border-radius: 999px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .question-box {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.03),
+          rgba(255, 255, 255, 0.01)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 22px;
+        margin-bottom: 20px;
+      }
+
+      .question-label {
+        color: var(--accent-2);
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+
+      .question-text {
+        margin: 0;
+        font-size: clamp(20px, 2vw, 28px);
+        line-height: 1.35;
+      }
+
+      .answers {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .answer {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: linear-gradient(
+          180deg,
+          rgba(24, 35, 71, 0.95),
+          rgba(14, 22, 44, 0.95)
+        );
+        color: var(--text);
+        border-radius: 18px;
+        padding: 16px 18px;
+        text-align: left;
+        cursor: pointer;
+        transition:
+          transform 0.2s ease,
+          border-color 0.2s ease,
+          background 0.2s ease,
+          opacity 0.2s ease;
+        min-height: 78px;
+        font-size: 16px;
+        line-height: 1.35;
+      }
+
+      .answer:hover:not(:disabled) {
+        transform: translateY(-2px);
+        border-color: rgba(255, 209, 0, 0.55);
+      }
+
+      .answer:disabled {
+        cursor: default;
+      }
+      .answer.correct {
+        background: rgba(40, 199, 111, 0.18);
+        border-color: rgba(40, 199, 111, 0.9);
+      }
+      .answer.wrong {
+        background: rgba(255, 91, 91, 0.18);
+        border-color: rgba(255, 91, 91, 0.9);
+      }
+      .answer.faded {
+        opacity: 0.22;
+      }
+      .answer.selected {
+        border-color: rgba(245, 130, 32, 0.95);
+        box-shadow: inset 0 0 0 1px rgba(245, 130, 32, 0.65);
+      }
+
+      .controls-row {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+
+      .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-top: 20px;
+      }
+
+      .meta-box {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 16px;
+      }
+
+      .meta-title {
+        color: var(--muted);
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 8px;
+      }
+
+      .meta-value {
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .sidebar {
+        padding: 22px;
+      }
+
+      .section-title {
+        margin: 0 0 14px;
+        font-size: 18px;
+      }
+
+      .lifelines {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+
+      .tool-btn,
+      .primary-btn,
+      .secondary-btn,
+      .ghost-btn {
+        border: none;
+        border-radius: 16px;
+        padding: 14px 16px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition:
+          transform 0.2s ease,
+          opacity 0.2s ease;
+      }
+
+      .tool-btn:hover:not(:disabled),
+      .primary-btn:hover,
+      .secondary-btn:hover,
+      .ghost-btn:hover {
+        transform: translateY(-2px);
+      }
+      .tool-btn:disabled,
+      .ghost-btn:disabled,
+      .primary-btn:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+
+      .tool-btn {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 209, 0, 0.18),
+          rgba(245, 130, 32, 0.14)
+        );
+        color: var(--text);
+        border: 1px solid rgba(255, 209, 0, 0.18);
+        text-align: left;
+      }
+
+      .primary-btn {
+        background: linear-gradient(180deg, var(--accent), #da6f14);
+        color: #fff;
+      }
+
+      .secondary-btn {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .ghost-btn {
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .ladder {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .ladder li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .ladder li.active {
+        background: rgba(245, 130, 32, 0.22);
+        border-color: rgba(245, 130, 32, 0.6);
+        color: #fff;
+        font-weight: 700;
+      }
+
+      .ladder li.completed {
+        background: rgba(40, 199, 111, 0.16);
+        border-color: rgba(40, 199, 111, 0.55);
+        color: #fff;
+      }
+
+      .ladder li.safe {
+        border-color: rgba(255, 209, 0, 0.45);
+        color: var(--accent-2);
+      }
+
+      .message {
+        margin-top: 20px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 16px;
+        color: var(--muted);
+        min-height: 116px;
+        line-height: 1.5;
+      }
+
+      .bank {
+        margin-top: 22px;
+      }
+
+      .question-bank {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+      }
+
+      .bank-btn {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        border-radius: 14px;
+        padding: 12px 10px;
+        font-weight: 700;
+        cursor: pointer;
+        min-height: 54px;
+        transition:
+          transform 0.2s ease,
+          border-color 0.2s ease,
+          opacity 0.2s ease;
+      }
+
+      .bank-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        border-color: rgba(255, 209, 0, 0.55);
+      }
+      .bank-btn.current {
+        border-color: rgba(245, 130, 32, 0.9);
+        background: rgba(245, 130, 32, 0.16);
+      }
+      .bank-btn.done {
+        border-color: rgba(40, 199, 111, 0.7);
+        background: rgba(40, 199, 111, 0.14);
+      }
+      .bank-btn.wrong {
+        border-color: rgba(255, 91, 91, 0.7);
+        background: rgba(255, 91, 91, 0.14);
+      }
+
+      .result-overlay,
+      .start-overlay,
+      .hint-overlay,
+      .register-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 10, 20, 0.75);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        z-index: 20;
+      }
+
+      .result-box,
+      .start-box,
+      .hint-box,
+      .register-box {
+        max-width: 760px;
+        width: 100%;
+        background: linear-gradient(180deg, #172347, #0f1934);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: var(--shadow);
+      }
+
+      .result-box {
+        text-align: center;
+      }
+
+      .result-box h2,
+      .start-box h2,
+      .hint-box h2,
+      .register-box h2 {
+        margin: 0 0 12px;
+        font-size: clamp(28px, 4vw, 42px);
+      }
+
+      .result-box p,
+      .start-box p,
+      .hint-box p,
+      .register-box p {
+        color: var(--muted);
+        line-height: 1.6;
+        margin: 0 0 18px;
+        font-size: 17px;
+      }
+
+      .register-form {
+        display: grid;
+        gap: 16px;
+        margin: 24px 0;
+      }
+
+      .form-group {
+        display: grid;
+        gap: 8px;
+      }
+
+      .form-group label {
+        color: var(--accent-2);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .form-group input {
+        padding: 14px 16px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        font-size: 15px;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease;
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: rgba(245, 130, 32, 0.6);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .form-group input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      .error-message {
+        color: var(--danger);
+        font-size: 13px;
+        margin-top: 4px;
+        display: none;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+
+      .result-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+      }
+
+      .tag {
+        display: inline-block;
+        padding: 8px 12px;
+        background: rgba(255, 209, 0, 0.16);
+        color: var(--accent-2);
+        border-radius: 999px;
+        font-weight: 700;
+        margin-bottom: 14px;
+      }
+
+      .attempts {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .hint-steps {
+        display: grid;
+        gap: 10px;
+        margin: 18px 0;
+      }
+
+      .hint-step {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 14px;
+        color: var(--text);
+        line-height: 1.5;
+      }
+
+      @media (max-width: 980px) {
+        .app {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 800px) {
+        .question-bank {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (max-width: 700px) {
+        body {
+          padding: 14px;
+        }
+        .hero,
+        .stage,
+        .sidebar {
+          padding: 18px;
+        }
+        .answers {
+          grid-template-columns: 1fr;
+        }
+        .meta-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 500px) {
+        .question-bank {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .meta-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="register-overlay" id="registerOverlay" style="display: flex">
+      <div class="register-box">
+        <div class="tag">Información requerida</div>
+        <h2>Bienvenido al simulador</h2>
+        <p>
+          Por favor, completa tus datos antes de comenzar. Estos datos serán
+          guardados en el formulario de resultados.
+        </p>
+        <form class="register-form" id="registerForm">
+          <div class="form-group">
+            <label for="registerName">Nombre completo *</label>
+            <input
+              type="text"
+              id="registerName"
+              placeholder="Ej: Juan García"
+              required
+            />
+            <div class="error-message" id="nameError">
+              El nombre es obligatorio
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="registerDocument">Número de documento *</label>
+            <input
+              type="text"
+              id="registerDocument"
+              placeholder="Ej: 1234567890"
+              required
+            />
+            <div class="error-message" id="documentError">
+              El número de documento es obligatorio
+            </div>
+          </div>
+        </form>
+        <div class="result-actions" style="justify-content: flex-start">
+          <button class="primary-btn" id="registerBtn">
+            Continuar al simulador
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="start-overlay" id="startOverlay" style="display: none">
+      <div class="start-box">
+        <div class="tag">Taller interactivo</div>
+        <h2>¿Cuánto sabes de lo psicosocial?</h2>
+        <p>
+          Este simulador permite elegir preguntas libremente, acumular
+          respuestas correctas y usar ayudas conceptuales antes de responder.
+          Cuando una respuesta sea incorrecta, el sistema la registrará como
+          incorrecta y mostrará la retroalimentación del porqué.
+        </p>
+        <div class="hint-steps">
+          <div class="hint-step">
+            <strong>Cómo funciona:</strong> eliges una pregunta, seleccionas una
+            opción y esa selección se toma como respuesta definitiva.
+          </div>
+          <div class="hint-step">
+            <strong>Ayuda conceptual:</strong> puedes revisar una pista antes de
+            responder con el botón de ayuda.
+          </div>
+          <div class="hint-step">
+            <strong>Meta:</strong> completar las 15 preguntas acumulando la
+            mayor cantidad de respuestas correctas.
+          </div>
+        </div>
+        <div class="result-actions" style="justify-content: flex-start">
+          <button class="primary-btn" id="startBtn">Comenzar simulador</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="app">
+      <section class="card">
+        <div class="hero">
+          <div class="eyebrow">Simulador interactivo para taller</div>
+          <h1>¿Cuánto sabes de lo psicosocial?</h1>
+          <p class="subtitle">
+            Un juego tipo concurso para repasar el enfoque psicosocial, el
+            origen de la perspectiva, la acción psicosocial en contexto y su
+            aplicación en escenarios de práctica profesional.
+          </p>
+        </div>
+
+        <div class="stage">
+          <div class="topbar">
+            <div class="pill" id="progressText">Pregunta 1 de 15</div>
+            <div class="pill" id="levelText">Nivel 1 · Apertura conceptual</div>
+            <div class="pill" id="scoreText">Puntaje: 0</div>
+            <div class="pill" id="accumulatedText">Acumuladas: 0/15</div>
+          </div>
+
+          <div class="question-box">
+            <div class="question-label">Pregunta actual</div>
+            <p class="question-text" id="questionText"></p>
+            <div class="attempts" id="attemptsText">
+              Intentos en esta pregunta: 0
+            </div>
+          </div>
+
+          <div class="answers" id="answersContainer"></div>
+
+          <div class="controls-row">
+            <button class="secondary-btn" id="showHintBtn">
+              Revisar ayuda conceptual
+            </button>
+            <button class="ghost-btn" id="nextPendingBtn">
+              Siguiente pregunta
+            </button>
+          </div>
+
+          <div class="message" id="messageBox">
+            Selecciona una opción. Esa selección se tomará como respuesta. Si es
+            incorrecta, verás por qué y la pregunta quedará registrada como
+            incorrecta.
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta-box">
+              <div class="meta-title">Aciertos</div>
+              <div class="meta-value" id="correctCount">0</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-title">Tiempo</div>
+              <div class="meta-value" id="timer">30s</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-title">Meta</div>
+              <div class="meta-value" id="goalText">
+                Comprender e intervenir
+              </div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-title">Pendientes</div>
+              <div class="meta-value" id="pendingText">15</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card sidebar">
+        <h3 class="section-title">Datos del estudiante</h3>
+        <div style="display: grid; gap: 10px; margin-bottom: 20px">
+          <input
+            type="text"
+            id="studentName"
+            placeholder="Nombre completo"
+            style="
+              padding: 10px;
+              border-radius: 12px;
+              border: 1px solid rgba(255, 255, 255, 0.15);
+              background: rgba(255, 255, 255, 0.05);
+              color: var(--text);
+              font-size: 14px;
+            "
+          />
+          <input
+            type="text"
+            id="studentID"
+            placeholder="ID / Número de cédula"
+            style="
+              padding: 10px;
+              border-radius: 12px;
+              border: 1px solid rgba(255, 255, 255, 0.15);
+              background: rgba(255, 255, 255, 0.05);
+              color: var(--text);
+              font-size: 14px;
+            "
+          />
+        </div>
+
+        <h3 class="section-title">Herramientas del juego</h3>
+        <div class="lifelines">
+          <button class="tool-btn" id="fiftyBtn">
+            50/50 · Elimina dos opciones
+          </button>
+          <button class="tool-btn" id="hintBtn">
+            Pista teórica · Ayuda antes de responder
+          </button>
+          <button class="tool-btn" id="audienceBtn">
+            Consulta al grupo · Sugiere la opción probable
+          </button>
+        </div>
+
+        <h3 class="section-title">Escalera de avance</h3>
+        <ol class="ladder" id="ladder"></ol>
+      </aside>
+    </div>
+
+    <div class="hint-overlay" id="hintOverlay">
+      <div class="hint-box">
+        <div class="tag">Ayuda conceptual</div>
+        <h2 id="hintTitle">Pista de apoyo</h2>
+        <p id="hintMessage"></p>
+        <div class="hint-steps" id="hintSteps"></div>
+        <div class="result-actions" style="justify-content: flex-start">
+          <button class="primary-btn" id="closeHintBtn">Continuar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-overlay" id="resultOverlay">
+      <div class="result-box">
+        <div class="tag" id="finalTag">Resultado final</div>
+        <h2 id="finalTitle">Excelente trabajo</h2>
+        <p id="finalMessage"></p>
+        <div class="result-actions">
+          <button class="primary-btn" id="restartBtn">Jugar de nuevo</button>
+          <button class="secondary-btn" id="sendResults">
+            Enviar resultados
+          </button>
+          <button class="ghost-btn" id="closeBtn">Cerrar resultado</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ========== CONFIGURACIÓN DE GOOGLE FORMS ==========
+      // Reemplaza estos valores con los de tu formulario
+      const FORM_BASE =
+        "https://docs.google.com/forms/d/e/1FAIpQLSfcCczGZ8sQ42j6ApTd-EIDHElLVxsGkSeTySeGvH9eIVskQw/formResponse";
+      const ENTRY = {
+        Nombre_Completo: "entry.495318394",
+        ID_Alumno: "entry.1862343610",
+        Nombre_Actividad: "entry.1949822258",
+        Puntaje: "entry.1109858717",
+        Porcentaje: "entry.572348352",
+      };
+      // =====================================================
+
+      const questions = [
+        {
+          level: "Nivel 1",
+          question: "¿Qué significa que 'no somos individuos aislados'?",
+          answers: [
+            "Que cada persona actúa de forma independiente",
+            "Que nuestras acciones no dependen de nadie",
+            "Que estamos influenciados por el contexto en el que vivimos",
+            "Que solo importan las decisiones personales",
+          ],
+          correct: 2,
+          explanation:
+            "Lo que sentimos, pensamos y hacemos está influenciado por nuestro contexto social, cultural y relacional.",
+          incorrectFeedback: [
+            "Incorrecto. Esta opción ignora la influencia del contexto.",
+            "Incorrecto. No reconoce la interacción con otros.",
+            "",
+            "Incorrecto. Reduce la comprensión a lo individual.",
+          ],
+          hint: "Piensa en cómo tu entorno influye en tu forma de ser.",
+        },
+        {
+          level: "Nivel 2",
+          question: "¿Qué integra lo psicosocial?",
+          answers: [
+            "Solo emociones",
+            "Solo el contexto social",
+            "La relación entre lo individual y lo social",
+            "Únicamente la conducta observable",
+          ],
+          correct: 2,
+          explanation:
+            "Lo psicosocial integra lo individual y lo social como dimensiones inseparables.",
+          incorrectFeedback: [
+            "Incorrecto. Falta el contexto.",
+            "Incorrecto. Falta la dimensión individual.",
+            "",
+            "Incorrecto. Limita el análisis.",
+          ],
+          hint: "Busca la opción que combine dos dimensiones.",
+        },
+        {
+          level: "Nivel 3",
+          question:
+            "Según Martín-Baró, ¿qué se necesita para comprender al sujeto?",
+          answers: [
+            "Analizar solo su personalidad",
+            "Entender su contexto histórico, social y político",
+            "Evaluar su conducta",
+            "Observar su rendimiento",
+          ],
+          correct: 1,
+          explanation:
+            "No se puede comprender al sujeto sin comprender su contexto.",
+          incorrectFeedback: [
+            "Incorrecto. Es una visión reducida.",
+            "",
+            "Incorrecto. Es insuficiente.",
+            "Incorrecto. No explica la complejidad.",
+          ],
+          hint: "Piensa más allá del individuo.",
+        },
+        {
+          level: "Nivel 4",
+          question: "¿Qué plantea la teoría de Mead?",
+          answers: [
+            "El individuo nace con identidad definida",
+            "El self se construye en interacción social",
+            "La identidad depende de la genética",
+            "La conducta es independiente del entorno",
+          ],
+          correct: 1,
+          explanation:
+            "El self se construye a través del lenguaje, relaciones y comunicación.",
+          incorrectFeedback: [
+            "Incorrecto. La identidad no es fija.",
+            "",
+            "Incorrecto. No es solo biológico.",
+            "Incorrecto. Ignora lo social.",
+          ],
+          hint: "La identidad se construye con otros.",
+        },
+        {
+          level: "Nivel 5",
+          question: "¿Qué incluye el microsistema según Bronfenbrenner?",
+          answers: [
+            "Cultura y leyes",
+            "Familia, escuela y comunidad",
+            "Medios de comunicación",
+            "Políticas públicas",
+          ],
+          correct: 1,
+          explanation:
+            "El microsistema incluye los entornos más cercanos al individuo.",
+          incorrectFeedback: [
+            "Incorrecto. Eso es macrosistema.",
+            "",
+            "Incorrecto. Es exosistema.",
+            "Incorrecto. No es nivel inmediato.",
+          ],
+          hint: "Piensa en lo más cercano a la persona.",
+        },
+        {
+          level: "Nivel 6",
+          question: "¿Qué caracteriza una acción psicosocial?",
+          answers: [
+            "Se centra solo en el individuo",
+            "Integra lo individual y lo social",
+            "Busca resultados rápidos",
+            "Se basa solo en emociones",
+          ],
+          correct: 1,
+          explanation:
+            "Una acción psicosocial integra ambas dimensiones para transformar la realidad.",
+          incorrectFeedback: [
+            "Incorrecto. Es incompleto.",
+            "",
+            "Incorrecto. No es el objetivo principal.",
+            "Incorrecto. Es limitado.",
+          ],
+          hint: "Debe integrar dos dimensiones.",
+        },
+        {
+          level: "Nivel 7",
+          question: "¿Cuál es el primer criterio de intervención psicosocial?",
+          answers: [
+            "Aplicar técnicas",
+            "Comprender el contexto",
+            "Evaluar resultados",
+            "Motivar a la persona",
+          ],
+          correct: 1,
+          explanation: "No puedes intervenir donde no has comprendido primero.",
+          incorrectFeedback: [
+            "Incorrecto. No es lo primero.",
+            "",
+            "Incorrecto. Es posterior.",
+            "Incorrecto. Es parcial.",
+          ],
+          hint: "Antes de actuar, debes entender.",
+        },
+        {
+          level: "Nivel 8",
+          question: "¿Qué le faltó al taller de autoestima en el barrio?",
+          answers: [
+            "Más actividades recreativas",
+            "Integrar el contexto social",
+            "Mayor duración",
+            "Más participantes",
+          ],
+          correct: 1,
+          explanation:
+            "No se intervino el contexto estructural que afecta a los jóvenes.",
+          incorrectFeedback: [
+            "Incorrecto. No es el problema central.",
+            "",
+            "Incorrecto. No soluciona el fondo.",
+            "Incorrecto. No cambia la realidad.",
+          ],
+          hint: "Piensa en lo que no se transformó.",
+        },
+        {
+          level: "Nivel 9",
+          question: "¿Por qué no toda intervención es psicosocial?",
+          answers: [
+            "Porque no todas son largas",
+            "Porque no integran contexto e individuo",
+            "Porque no usan teoría",
+            "Porque no son grupales",
+          ],
+          correct: 1,
+          explanation:
+            "Muchas intervenciones ignoran el contexto y por eso no son psicosociales.",
+          incorrectFeedback: [
+            "Incorrecto. No es el criterio.",
+            "",
+            "Incorrecto. No es lo principal.",
+            "Incorrecto. No es necesario.",
+          ],
+          hint: "Piensa en lo que debe integrarse.",
+        },
+        {
+          level: "Nivel 10",
+          question: "¿Qué busca la intervención psicosocial?",
+          answers: [
+            "Alivio temporal",
+            "Cambio real y sostenible",
+            "Solo acompañamiento",
+            "Diagnóstico individual",
+          ],
+          correct: 1,
+          explanation: "Busca transformar la realidad de forma sostenible.",
+          incorrectFeedback: [
+            "Incorrecto. Es insuficiente.",
+            "",
+            "Incorrecto. Es limitado.",
+            "Incorrecto. No es el objetivo final.",
+          ],
+          hint: "Busca transformación, no solo alivio.",
+        },
+        {
+          level: "Nivel 11",
+          question:
+            "En el caso de Andrés, ¿qué tipo de factores están influyendo en su situación?",
+          answers: [
+            "Solo factores personales",
+            "Factores individuales y sociales interrelacionados",
+            "Únicamente factores familiares",
+            "Solo factores escolares",
+          ],
+          correct: 1,
+          explanation:
+            "La situación está influenciada por múltiples factores: contexto, emociones y relaciones.",
+          incorrectFeedback: [
+            "Incorrecto. Reduce el análisis.",
+            "",
+            "Incorrecto. Es limitado.",
+            "Incorrecto. Es incompleto.",
+          ],
+          hint: "No es una sola causa.",
+        },
+        {
+          level: "Nivel 12",
+          question:
+            "¿Qué demuestra el ejemplo del estudiante con bajo rendimiento?",
+          answers: [
+            "Que es flojo",
+            "Que el problema es solo académico",
+            "Que el contexto influye en su situación",
+            "Que no le interesa estudiar",
+          ],
+          correct: 2,
+          explanation:
+            "El rendimiento está influenciado por factores contextuales.",
+          incorrectFeedback: [
+            "Incorrecto. Es un juicio.",
+            "Incorrecto. Es reduccionista.",
+            "",
+            "Incorrecto. Es superficial.",
+          ],
+          hint: "No juzgues, analiza.",
+        },
+        {
+          level: "Nivel 13",
+          question: "¿Qué plantea la psicología social latinoamericana?",
+          answers: [
+            "Centrarse en lo individual",
+            "Desconocer el contexto social",
+            "Compromiso ético y social con la realidad",
+            "Aplicar teorías sin adaptación",
+          ],
+          correct: 2,
+          explanation: "Busca transformar la realidad social.",
+          incorrectFeedback: ["Incorrecto.", "Incorrecto.", "", "Incorrecto."],
+          hint: "Piensa en transformación social.",
+        },
+        {
+          level: "Nivel 14",
+          question: "¿Qué papel cumple el lenguaje según Mead?",
+          answers: [
+            "No influye",
+            "Solo comunica",
+            "Construye identidad",
+            "Es independiente",
+          ],
+          correct: 2,
+          explanation: "El lenguaje influye en la construcción del self.",
+          incorrectFeedback: ["Incorrecto.", "Incorrecto.", "", "Incorrecto."],
+          hint: "El lenguaje construye.",
+        },
+        {
+          level: "Nivel 15",
+          question: "¿Qué implica una intervención psicosocial adecuada?",
+          answers: [
+            "Intervenir solo al individuo",
+            "Ignorar el contexto",
+            "Comprender e intervenir en la realidad social",
+            "Aplicar talleres sin diagnóstico",
+          ],
+          correct: 2,
+          explanation: "Debe comprender el contexto y generar transformación.",
+          incorrectFeedback: ["Incorrecto.", "Incorrecto.", "", "Incorrecto."],
+          hint: "Comprender antes de intervenir.",
+        },
+      ];
+      const state = {
+        currentQuestion: 0,
+        score: 0,
+        timer: 30,
+        timerInterval: null,
+        usedFifty: false,
+        usedHint: false,
+        usedAudience: false,
+        answeredCorrectly: new Set(),
+        answeredWrong: new Set(),
+        attempts: Array(questions.length).fill(0),
+        locked: false,
+      };
+
+      const progressText = document.getElementById("progressText");
+      const levelText = document.getElementById("levelText");
+      const scoreText = document.getElementById("scoreText");
+      const accumulatedText = document.getElementById("accumulatedText");
+      const questionText = document.getElementById("questionText");
+      const answersContainer = document.getElementById("answersContainer");
+      const correctCount = document.getElementById("correctCount");
+      const timerEl = document.getElementById("timer");
+      const goalText = document.getElementById("goalText");
+      const pendingText = document.getElementById("pendingText");
+      const messageBox = document.getElementById("messageBox");
+      const attemptsText = document.getElementById("attemptsText");
+
+      const fiftyBtn = document.getElementById("fiftyBtn");
+      const hintBtn = document.getElementById("hintBtn");
+      const audienceBtn = document.getElementById("audienceBtn");
+      const showHintBtn = document.getElementById("showHintBtn");
+      const nextPendingBtn = document.getElementById("nextPendingBtn");
+      const ladder = document.getElementById("ladder");
+      const studentName = document.getElementById("studentName");
+      const studentID = document.getElementById("studentID");
+      const sendResults = document.getElementById("sendResults");
+
+      const resultOverlay = document.getElementById("resultOverlay");
+      const finalTag = document.getElementById("finalTag");
+      const finalTitle = document.getElementById("finalTitle");
+      const finalMessage = document.getElementById("finalMessage");
+      const restartBtn = document.getElementById("restartBtn");
+      const closeBtn = document.getElementById("closeBtn");
+
+      const startOverlay = document.getElementById("startOverlay");
+      const startBtn = document.getElementById("startBtn");
+
+      const hintOverlay = document.getElementById("hintOverlay");
+      const hintTitle = document.getElementById("hintTitle");
+      const hintMessage = document.getElementById("hintMessage");
+      const hintSteps = document.getElementById("hintSteps");
+      const closeHintBtn = document.getElementById("closeHintBtn");
+
+      const registerOverlay = document.getElementById("registerOverlay");
+      const registerForm = document.getElementById("registerForm");
+      const registerBtn = document.getElementById("registerBtn");
+      const registerName = document.getElementById("registerName");
+      const registerDocument = document.getElementById("registerDocument");
+      const nameError = document.getElementById("nameError");
+      const documentError = document.getElementById("documentError");
+
+      function buildLadder() {
+        ladder.innerHTML = "";
+        questions
+          .slice()
+          .reverse()
+          .forEach((q, reverseIndex) => {
+            const realIndex = questions.length - 1 - reverseIndex;
+            const li = document.createElement("li");
+            if (realIndex === state.currentQuestion) li.classList.add("active");
+            if (state.answeredCorrectly.has(realIndex))
+              li.classList.add("completed");
+            if ([4, 9, 14].includes(realIndex)) li.classList.add("safe");
+            li.innerHTML = `<span>${q.level.replace("Nivel ", "N")}</span><span>${realIndex + 1}</span>`;
+            ladder.appendChild(li);
+          });
+      }
+
+      function startTimer() {
+        clearInterval(state.timerInterval);
+        state.timer = 30;
+        timerEl.textContent = `${state.timer}s`;
+        state.timerInterval = setInterval(() => {
+          state.timer--;
+          timerEl.textContent = `${state.timer}s`;
+          if (state.timer <= 0) {
+            clearInterval(state.timerInterval);
+            autoFail();
+          }
+        }, 1000);
+      }
+
+      function loadQuestion(index = state.currentQuestion) {
+        state.currentQuestion = index;
+        state.locked = false;
+        state.usedFifty = false;
+        state.usedHint = false;
+        state.usedAudience = false;
+        fiftyBtn.disabled = false;
+        hintBtn.disabled = false;
+        audienceBtn.disabled = false;
+
+        const q = questions[index];
+        progressText.textContent = `Pregunta ${index + 1} de ${questions.length}`;
+        levelText.textContent = q.level;
+        scoreText.textContent = `Puntaje: ${state.score}`;
+        accumulatedText.textContent = `Acumuladas: ${state.answeredCorrectly.size}/${questions.length}`;
+        correctCount.textContent = state.answeredCorrectly.size;
+        pendingText.textContent =
+          questions.length - state.answeredCorrectly.size;
+        goalText.textContent =
+          index < 5
+            ? "Comprender conceptos"
+            : index < 10
+              ? "Analizar contextos"
+              : "Intervenir con criterio";
+        questionText.textContent = q.question;
+        attemptsText.textContent = `Intentos en esta pregunta: ${state.attempts[index]}`;
+
+        if (state.answeredCorrectly.has(index)) {
+          messageBox.innerHTML =
+            "<strong>Pregunta ya resuelta correctamente.</strong> Puedes revisarla o elegir otra pregunta pendiente.";
+        } else if (state.answeredWrong.has(index)) {
+          messageBox.innerHTML =
+            "<strong>Pregunta registrada como incorrecta.</strong> Puedes revisarla, pero ya quedó tomada como incorrecta en el acumulado.";
+        } else {
+          messageBox.innerHTML =
+            "Selecciona una opción. Esa selección se tomará como respuesta definitiva para esta pregunta. Si quieres, puedes revisar una ayuda conceptual antes de responder.";
+        }
+
+        answersContainer.innerHTML = "";
+        q.answers.forEach((answer, answerIndex) => {
+          const btn = document.createElement("button");
+          btn.className = "answer";
+          btn.innerHTML = `<strong>${String.fromCharCode(65 + answerIndex)}.</strong> ${answer}`;
+
+          if (
+            state.answeredCorrectly.has(index) ||
+            state.answeredWrong.has(index)
+          ) {
+            btn.disabled = true;
+            if (answerIndex === q.correct) btn.classList.add("correct");
+          } else {
+            btn.addEventListener("click", () => chooseAnswer(answerIndex));
+          }
+          answersContainer.appendChild(btn);
+        });
+
+        buildLadder();
+
+        if (
+          !state.answeredCorrectly.has(index) &&
+          !state.answeredWrong.has(index)
+        ) {
+          startTimer();
+        } else {
+          clearInterval(state.timerInterval);
+          timerEl.textContent = "—";
+        }
+      }
+
+      function chooseAnswer(index) {
+        if (state.locked) return;
+        state.locked = true;
+        clearInterval(state.timerInterval);
+        revealAnswer(index);
+      }
+
+      function revealAnswer(index) {
+        const q = questions[state.currentQuestion];
+        const buttons = [...document.querySelectorAll(".answer")];
+        state.attempts[state.currentQuestion] += 1;
+        attemptsText.textContent = `Intentos en esta pregunta: ${state.attempts[state.currentQuestion]}`;
+
+        buttons.forEach((btn, i) => {
+          btn.disabled = true;
+          if (i === q.correct) btn.classList.add("correct");
+          if (i === index && i !== q.correct) btn.classList.add("wrong");
+        });
+
+        if (index === q.correct) {
+          state.answeredCorrectly.add(state.currentQuestion);
+          const gained = 100;
+          state.score += gained;
+          scoreText.textContent = `Puntaje: ${state.score}`;
+          accumulatedText.textContent = `Acumuladas: ${state.answeredCorrectly.size}/${questions.length}`;
+          correctCount.textContent = state.answeredCorrectly.size;
+          pendingText.textContent =
+            questions.length - state.answeredCorrectly.size;
+          messageBox.innerHTML = `<strong>Correcto.</strong> ${q.explanation} <br><br>Ganaste <strong>${gained} puntos</strong> en esta pregunta.`;
+        } else {
+          state.answeredWrong.add(state.currentQuestion);
+          const reason =
+            q.incorrectFeedback[index] ||
+            "Esta opción no corresponde de manera precisa al concepto trabajado.";
+          messageBox.innerHTML = `<strong>Respuesta incorrecta.</strong> ${reason} <br><br><strong>Retroalimentación conceptual:</strong> ${q.explanation}`;
+        }
+
+        buildLadder();
+
+        if (state.answeredCorrectly.size === questions.length) {
+          setTimeout(() => endGame(true), 1800);
+        }
+      }
+
+      function autoFail() {
+        const q = questions[state.currentQuestion];
+        const buttons = [...document.querySelectorAll(".answer")];
+        state.attempts[state.currentQuestion] += 1;
+        attemptsText.textContent = `Intentos en esta pregunta: ${state.attempts[state.currentQuestion]}`;
+        state.answeredWrong.add(state.currentQuestion);
+        buttons.forEach((btn, i) => {
+          btn.disabled = true;
+          if (i === q.correct) btn.classList.add("correct");
+        });
+        messageBox.innerHTML = `<strong>Tiempo agotado.</strong> La pregunta se registra como incorrecta por no responder a tiempo. <br><br><strong>Retroalimentación conceptual:</strong> ${q.explanation}`;
+        buildLadder();
+      }
+
+      function useFifty() {
+        if (
+          state.usedFifty ||
+          state.locked ||
+          state.answeredCorrectly.has(state.currentQuestion) ||
+          state.answeredWrong.has(state.currentQuestion)
+        )
+          return;
+        state.usedFifty = true;
+        fiftyBtn.disabled = true;
+        const q = questions[state.currentQuestion];
+        const buttons = [...document.querySelectorAll(".answer")];
+        const wrongIndexes = q.answers
+          .map((_, i) => i)
+          .filter((i) => i !== q.correct)
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 2);
+
+        wrongIndexes.forEach((i) => {
+          buttons[i].classList.add("faded");
+          buttons[i].disabled = true;
+        });
+
+        messageBox.innerHTML =
+          "<strong>50/50 activado.</strong> Se eliminaron dos opciones incorrectas para facilitar el análisis antes de responder.";
+      }
+
+      function useHint() {
+        if (
+          state.usedHint ||
+          state.answeredCorrectly.has(state.currentQuestion) ||
+          state.answeredWrong.has(state.currentQuestion)
+        )
+          return;
+        state.usedHint = true;
+        hintBtn.disabled = true;
+        openHintModal(questions[state.currentQuestion]);
+      }
+
+      function useAudience() {
+        if (
+          state.usedAudience ||
+          state.answeredCorrectly.has(state.currentQuestion) ||
+          state.answeredWrong.has(state.currentQuestion)
+        )
+          return;
+        state.usedAudience = true;
+        audienceBtn.disabled = true;
+        const q = questions[state.currentQuestion];
+        const labels = ["A", "B", "C", "D"];
+        messageBox.innerHTML = `<strong>Consulta al grupo.</strong> La tendencia del grupo apunta a la opción <strong>${labels[q.correct]}</strong> como la más sólida conceptualmente.`;
+      }
+
+      function openHintModal(q) {
+        const fallbackTitle = "Pista de apoyo";
+        const fallbackHint =
+          "Revisa el concepto central de esta pregunta antes de responder.";
+        hintTitle.textContent = q.clueTitle || fallbackTitle;
+        hintMessage.textContent = q.hint || fallbackHint;
+        const steps = Array.isArray(q.clueSteps) ? q.clueSteps : [];
+        hintSteps.innerHTML = steps
+          .map((step) => `<div class="hint-step">${step}</div>`)
+          .join("");
+        hintOverlay.style.display = "flex";
+      }
+
+      function switchQuestion(index) {
+        clearInterval(state.timerInterval);
+        loadQuestion(index);
+      }
+
+      function findNextPending() {
+        for (let i = 0; i < questions.length; i++) {
+          if (!state.answeredCorrectly.has(i) && !state.answeredWrong.has(i))
+            return i;
+        }
+        return null;
+      }
+
+      function endGame(completed) {
+        clearInterval(state.timerInterval);
+        resultOverlay.style.display = "flex";
+        const totalAnswered =
+          state.answeredCorrectly.size + state.answeredWrong.size;
+        if (completed || totalAnswered === questions.length) {
+          finalTag.textContent = "Simulador finalizado";
+          finalTitle.textContent = "Recorrido completado";
+          finalMessage.textContent = `Obtuviste ${state.answeredCorrectly.size} respuestas correctas de ${questions.length} y acumulaste ${state.score} puntos. El resultado final te permite identificar fortalezas y conceptos que conviene reforzar en el taller.`;
+        } else {
+          finalTag.textContent = "Progreso actual";
+          finalTitle.textContent = "Vas avanzando";
+          finalMessage.textContent = `Hasta ahora acumulas ${state.answeredCorrectly.size} respuestas correctas, ${state.answeredWrong.size} incorrectas y ${state.score} puntos.`;
+        }
+      }
+
+      function restartGame() {
+        state.currentQuestion = 0;
+        state.score = 0;
+        state.timer = 30;
+        state.usedFifty = false;
+        state.usedHint = false;
+        state.usedAudience = false;
+        state.answeredCorrectly = new Set();
+        state.answeredWrong = new Set();
+        state.attempts = Array(questions.length).fill(0);
+        state.locked = false;
+        resultOverlay.style.display = "none";
+        hintOverlay.style.display = "none";
+        startOverlay.style.display = "none";
+        registerOverlay.style.display = "flex";
+
+        // Limpiar campos de registro
+        registerName.value = "";
+        registerDocument.value = "";
+        nameError.classList.remove("show");
+        documentError.classList.remove("show");
+      }
+
+      fiftyBtn.addEventListener("click", useFifty);
+      hintBtn.addEventListener("click", useHint);
+      audienceBtn.addEventListener("click", useAudience);
+      showHintBtn.addEventListener("click", () =>
+        openHintModal(questions[state.currentQuestion]),
+      );
+      nextPendingBtn.addEventListener("click", () => {
+        const next = findNextPending();
+        if (next !== null) loadQuestion(next);
+        else endGame(false);
+      });
+      restartBtn.addEventListener("click", restartGame);
+      closeBtn.addEventListener("click", () => {
+        resultOverlay.style.display = "none";
+      });
+      startBtn.addEventListener("click", () => {
+        startOverlay.style.display = "none";
+        loadQuestion(0);
+      });
+      closeHintBtn.addEventListener("click", () => {
+        hintOverlay.style.display = "none";
+      });
+
+      // ========== MÓDULO DE REGISTRO ==========
+      function validateRegisterForm() {
+        let isValid = true;
+        const name = registerName.value.trim();
+        const document = registerDocument.value.trim();
+
+        // Validar nombre
+        if (!name) {
+          nameError.classList.add("show");
+          isValid = false;
+        } else {
+          nameError.classList.remove("show");
+        }
+
+        // Validar documento
+        if (!document) {
+          documentError.classList.add("show");
+          isValid = false;
+        } else {
+          documentError.classList.remove("show");
+        }
+
+        return isValid;
+      }
+
+      registerBtn.addEventListener("click", () => {
+        if (!validateRegisterForm()) return;
+
+        // Guardar datos
+        const name = registerName.value.trim();
+        const document = registerDocument.value.trim();
+        localStorage.setItem("quiz_name", name);
+        localStorage.setItem("quiz_id", document);
+
+        // Actualizar campos en sidebar
+        studentName.value = name;
+        studentID.value = document;
+
+        // Mostrar siguiente overlay
+        registerOverlay.style.display = "none";
+        startOverlay.style.display = "flex";
+      });
+
+      // Permitir Enter para enviar el formulario
+      registerForm.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          registerBtn.click();
+        }
+      });
+
+      // Limpiar errores mientras se escribe
+      registerName.addEventListener("input", () => {
+        if (registerName.value.trim()) {
+          nameError.classList.remove("show");
+        }
+      });
+
+      registerDocument.addEventListener("input", () => {
+        if (registerDocument.value.trim()) {
+          documentError.classList.remove("show");
+        }
+      });
+
+      // ========== GUARDAR DATOS EN LOCALSTORAGE ==========
+      studentName.addEventListener("input", (e) => {
+        localStorage.setItem("quiz_name", e.target.value);
+      });
+      studentID.addEventListener("input", (e) => {
+        localStorage.setItem("quiz_id", e.target.value);
+      });
+
+      // Cargar datos guardados
+      const savedName = localStorage.getItem("quiz_name") || "";
+      const savedID = localStorage.getItem("quiz_id") || "";
+      studentName.value = savedName;
+      studentID.value = savedID;
+
+      // ========== ENVIAR RESULTADOS A GOOGLE FORMS ==========
+      sendResults.addEventListener("click", () => {
+        const name = studentName.value.trim();
+        const sid = studentID.value.trim();
+
+        if (!name || !sid) {
+          if (
+            !confirm(
+              "No registraste Nombre e ID. ¿Deseas continuar sin esos datos?",
+            )
+          ) {
+            return;
+          }
+        }
+
+        const maxScore = questions.length * 100;
+        const percentage =
+          maxScore > 0 ? Math.round((state.score / maxScore) * 100) : 0;
+
+        const params = new URLSearchParams();
+        if (name) params.set(ENTRY.Nombre_Completo, name);
+        if (sid) params.set(ENTRY.ID_Alumno, sid);
+        params.set(ENTRY.Nombre_Actividad, "¿Cuánto sabes de lo psicosocial?");
+        params.set(ENTRY.Puntaje, String(state.score));
+        params.set(ENTRY.Porcentaje, String(percentage) + "%");
+
+        const url = FORM_BASE + "?" + params.toString();
+        window.open(url, "_blank");
+        alert("Se abrirá el formulario con tus resultados. ¡Gracias!");
+      });
+
+      buildLadder();
+    </script>
+  </body>
+</html>
