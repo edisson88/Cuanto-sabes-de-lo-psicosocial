@@ -24,6 +24,7 @@
       }
       body {
         margin: 0;
+        overflow-x: hidden;
         font-family: Arial, Helvetica, sans-serif;
         background:
           radial-gradient(
@@ -228,8 +229,9 @@
       }
 
       .meta-value {
-        font-size: 20px;
+        font-size: clamp(14px, 2vw, 20px);
         font-weight: 700;
+        word-break: break-word;
       }
 
       .sidebar {
@@ -302,44 +304,6 @@
         background: rgba(255, 255, 255, 0.04);
         color: var(--text);
         border: 1px solid rgba(255, 255, 255, 0.08);
-      }
-
-      .ladder {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: grid;
-        gap: 8px;
-      }
-
-      .ladder li {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 12px;
-        border-radius: 14px;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        color: var(--muted);
-        font-size: 14px;
-      }
-
-      .ladder li.active {
-        background: rgba(245, 130, 32, 0.22);
-        border-color: rgba(245, 130, 32, 0.6);
-        color: #fff;
-        font-weight: 700;
-      }
-
-      .ladder li.completed {
-        background: rgba(40, 199, 111, 0.16);
-        border-color: rgba(40, 199, 111, 0.55);
-        color: #fff;
-      }
-
-      .ladder li.safe {
-        border-color: rgba(255, 209, 0, 0.45);
-        color: var(--accent-2);
       }
 
       .message {
@@ -415,6 +379,8 @@
       .register-box {
         max-width: 760px;
         width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
         background: linear-gradient(180deg, #172347, #0f1934);
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 24px;
@@ -533,6 +499,36 @@
         line-height: 1.5;
       }
 
+      .feedback-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 10, 20, 0.75);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        z-index: 30;
+      }
+
+      .feedback-box {
+        max-width: 600px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        background: linear-gradient(180deg, #172347, #0f1934);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: var(--shadow);
+      }
+
+      .feedback-box p {
+        color: var(--muted);
+        line-height: 1.6;
+        margin: 0 0 18px;
+        font-size: 17px;
+      }
+
       @media (max-width: 980px) {
         .app {
           grid-template-columns: 1fr;
@@ -542,6 +538,12 @@
       @media (max-width: 800px) {
         .question-bank {
           grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (max-width: 860px) {
+        .meta-grid {
+          grid-template-columns: 1fr 1fr;
         }
       }
 
@@ -559,6 +561,12 @@
         }
         .meta-grid {
           grid-template-columns: 1fr 1fr;
+        }
+        .result-box,
+        .start-box,
+        .hint-box,
+        .register-box {
+          padding: 20px;
         }
       }
 
@@ -721,6 +729,7 @@
             id="studentName"
             placeholder="Nombre completo"
             style="
+              width: 100%;
               padding: 10px;
               border-radius: 12px;
               border: 1px solid rgba(255, 255, 255, 0.15);
@@ -734,6 +743,7 @@
             id="studentID"
             placeholder="ID / Número de cédula"
             style="
+              width: 100%;
               padding: 10px;
               border-radius: 12px;
               border: 1px solid rgba(255, 255, 255, 0.15);
@@ -757,9 +767,17 @@
           </button>
         </div>
 
-        <h3 class="section-title">Escalera de avance</h3>
-        <ol class="ladder" id="ladder"></ol>
       </aside>
+    </div>
+
+    <div class="feedback-overlay" id="feedbackOverlay">
+      <div class="feedback-box">
+        <div class="tag" id="feedbackTag">Retroalimentación</div>
+        <p id="feedbackMessage"></p>
+        <div class="result-actions" style="justify-content: flex-start">
+          <button class="primary-btn" id="closeFeedbackBtn">Continuar</button>
+        </div>
+      </div>
     </div>
 
     <div class="hint-overlay" id="hintOverlay">
@@ -1120,7 +1138,6 @@
       const audienceBtn = document.getElementById("audienceBtn");
       const showHintBtn = document.getElementById("showHintBtn");
       const nextPendingBtn = document.getElementById("nextPendingBtn");
-      const ladder = document.getElementById("ladder");
       const studentName = document.getElementById("studentName");
       const studentID = document.getElementById("studentID");
       const sendResults = document.getElementById("sendResults");
@@ -1149,22 +1166,11 @@
       const nameError = document.getElementById("nameError");
       const documentError = document.getElementById("documentError");
 
-      function buildLadder() {
-        ladder.innerHTML = "";
-        questions
-          .slice()
-          .reverse()
-          .forEach((q, reverseIndex) => {
-            const realIndex = questions.length - 1 - reverseIndex;
-            const li = document.createElement("li");
-            if (realIndex === state.currentQuestion) li.classList.add("active");
-            if (state.answeredCorrectly.has(realIndex))
-              li.classList.add("completed");
-            if ([4, 9, 14].includes(realIndex)) li.classList.add("safe");
-            li.innerHTML = `<span>${q.level.replace("Nivel ", "N")}</span><span>${realIndex + 1}</span>`;
-            ladder.appendChild(li);
-          });
-      }
+      const feedbackOverlay = document.getElementById("feedbackOverlay");
+      const feedbackTag = document.getElementById("feedbackTag");
+      const feedbackMessage = document.getElementById("feedbackMessage");
+      const closeFeedbackBtn = document.getElementById("closeFeedbackBtn");
+      let pendingEndGame = false;
 
       function startTimer() {
         clearInterval(state.timerInterval);
@@ -1236,8 +1242,6 @@
           answersContainer.appendChild(btn);
         });
 
-        buildLadder();
-
         if (
           !state.answeredCorrectly.has(index) &&
           !state.answeredWrong.has(index)
@@ -1278,18 +1282,24 @@
           pendingText.textContent =
             questions.length - state.answeredCorrectly.size;
           messageBox.innerHTML = `<strong>Correcto.</strong> ${q.explanation} <br><br>Ganaste <strong>${gained} puntos</strong> en esta pregunta.`;
+          feedbackTag.textContent = "¡Correcto!";
+          feedbackTag.style.cssText = "background: rgba(40, 199, 111, 0.16); color: var(--success);";
+          feedbackMessage.innerHTML = `${q.explanation}<br><br>Ganaste <strong>${gained} puntos</strong> en esta pregunta.`;
+          feedbackOverlay.style.display = "flex";
         } else {
           state.answeredWrong.add(state.currentQuestion);
           const reason =
             q.incorrectFeedback[index] ||
             "Esta opción no corresponde de manera precisa al concepto trabajado.";
           messageBox.innerHTML = `<strong>Respuesta incorrecta.</strong> ${reason} <br><br><strong>Retroalimentación conceptual:</strong> ${q.explanation}`;
+          feedbackTag.textContent = "Respuesta incorrecta";
+          feedbackTag.style.cssText = "background: rgba(255, 91, 91, 0.16); color: var(--danger);";
+          feedbackMessage.innerHTML = `${reason}<br><br><strong>Retroalimentación conceptual:</strong> ${q.explanation}`;
+          feedbackOverlay.style.display = "flex";
         }
 
-        buildLadder();
-
         if (state.answeredCorrectly.size === questions.length) {
-          setTimeout(() => endGame(true), 1800);
+          pendingEndGame = true;
         }
       }
 
@@ -1304,7 +1314,10 @@
           if (i === q.correct) btn.classList.add("correct");
         });
         messageBox.innerHTML = `<strong>Tiempo agotado.</strong> La pregunta se registra como incorrecta por no responder a tiempo. <br><br><strong>Retroalimentación conceptual:</strong> ${q.explanation}`;
-        buildLadder();
+        feedbackTag.textContent = "Tiempo agotado";
+        feedbackTag.style.cssText = "background: rgba(255, 91, 91, 0.16); color: var(--danger);";
+        feedbackMessage.innerHTML = `La pregunta se registra como incorrecta por no responder a tiempo.<br><br><strong>Retroalimentación conceptual:</strong> ${q.explanation}`;
+        feedbackOverlay.style.display = "flex";
       }
 
       function useFifty() {
@@ -1415,8 +1428,10 @@
         state.locked = false;
         resultOverlay.style.display = "none";
         hintOverlay.style.display = "none";
+        feedbackOverlay.style.display = "none";
         startOverlay.style.display = "none";
         registerOverlay.style.display = "flex";
+        pendingEndGame = false;
 
         // Limpiar campos de registro
         registerName.value = "";
@@ -1446,6 +1461,17 @@
       });
       closeHintBtn.addEventListener("click", () => {
         hintOverlay.style.display = "none";
+      });
+      closeFeedbackBtn.addEventListener("click", () => {
+        feedbackOverlay.style.display = "none";
+        if (pendingEndGame) {
+          pendingEndGame = false;
+          endGame(true);
+        } else {
+          const next = findNextPending();
+          if (next !== null) loadQuestion(next);
+          else endGame(false);
+        }
       });
 
       // ========== MÓDULO DE REGISTRO ==========
@@ -1556,7 +1582,6 @@
         alert("Se abrirá el formulario con tus resultados. ¡Gracias!");
       });
 
-      buildLadder();
     </script>
   </body>
 </html>
